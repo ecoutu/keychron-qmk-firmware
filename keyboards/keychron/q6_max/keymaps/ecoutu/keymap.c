@@ -26,7 +26,7 @@ enum layers {
 
 #if defined(TAP_DANCE_ENABLE)
 enum tap_dance_keycodes {
-    TD_W,
+  TD_W,
 };
 #endif
 
@@ -82,7 +82,7 @@ static td_state_t cur_dance(tap_dance_state_t *state) {
 }
 
 static td_state_t w_tap_state = TD_NONE;
-static bool       w_held      = false;
+static bool w_held = false;
 
 static void td_w_finished(tap_dance_state_t *state, void *user_data) {
   w_tap_state = cur_dance(state);
@@ -91,7 +91,7 @@ static void td_w_finished(tap_dance_state_t *state, void *user_data) {
       tap_code(KC_W);
       break;
     case TD_SINGLE_HOLD:
-      if (!w_held) register_code(KC_W);
+      if (!w_held) register_code(KC_W); // no-op if already toggled held
       break;
     case TD_DOUBLE_TAP:
       if (w_held) {
@@ -115,7 +115,7 @@ static void td_w_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 tap_dance_action_t tap_dance_actions[] = {
-    [TD_W] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_w_finished, td_w_reset),
+  [TD_W] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_w_finished, td_w_reset),
 };
 #endif // TAP_DANCE_ENABLE
 
