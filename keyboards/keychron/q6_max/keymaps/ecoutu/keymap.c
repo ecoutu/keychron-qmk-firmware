@@ -64,8 +64,58 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 // clang-format on
 #if defined(TAP_DANCE_ENABLE)
+typedef enum {
+  TD_NONE,
+  TD_UNKNOWN,
+  TD_SINGLE_TAP,
+  TD_SINGLE_HOLD,
+  TD_DOUBLE_TAP,
+} td_state_t;
+
+static td_state_t cur_dance(tap_dance_state_t *state) {
+  if (state->count == 1) {
+    if (state->interrupted || !state->pressed) return TD_SINGLE_TAP;
+    return TD_SINGLE_HOLD;
+  }
+  if (state->count == 2) return TD_DOUBLE_TAP;
+  return TD_UNKNOWN;
+}
+
+static td_state_t w_tap_state = TD_NONE;
+static bool       w_held      = false;
+
+static void td_w_finished(tap_dance_state_t *state, void *user_data) {
+  w_tap_state = cur_dance(state);
+  switch (w_tap_state) {
+    case TD_SINGLE_TAP:
+      tap_code(KC_W);
+      break;
+    case TD_SINGLE_HOLD:
+      if (!w_held) register_code(KC_W);
+      break;
+    case TD_DOUBLE_TAP:
+      if (w_held) {
+        unregister_code(KC_W);
+        w_held = false;
+      } else {
+        register_code(KC_W);
+        w_held = true;
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+static void td_w_reset(tap_dance_state_t *state, void *user_data) {
+  if (w_tap_state == TD_SINGLE_HOLD && !w_held) {
+    unregister_code(KC_W);
+  }
+  w_tap_state = TD_NONE;
+}
+
 tap_dance_action_t tap_dance_actions[] = {
-    // Tap dance actions can be added here
+    [TD_W] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_w_finished, td_w_reset),
 };
 #endif // TAP_DANCE_ENABLE
 
