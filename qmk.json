@@ -1,6 +1,6 @@
 {
-    "userspace_version": "1",
+    "userspace_version": "1.0",
     "build_targets": [
-        ["keychron/q6_max", "ecoutu"]
+        ["keychron/q6_max/ansi_encoder", "ecoutu"]
     ]
 }

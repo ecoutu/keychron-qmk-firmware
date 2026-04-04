@@ -1,6 +1,6 @@
 # Makefile — convenience wrapper for QMK build and flash commands
 
-KEYBOARD  := keychron/q6_max
+KEYBOARD  := keychron/q6_max/ansi_encoder
 KEYMAP    := ecoutu
 IMAGE     := qmkfm/qmk_cli
 USERSPACE := $(shell pwd)

@@ -2,7 +2,8 @@
 #pragma once
 
 // Debounce: time in ms to wait after a key state change before registering it.
-// Default is 5. Lower = more responsive, higher = fewer false triggers.
+// The keyboard default is 20ms. Override here to tune responsiveness.
+#undef DEBOUNCE
 #define DEBOUNCE 5
 
 // Tapping term: max ms between press and release to count as a tap (not a hold).
