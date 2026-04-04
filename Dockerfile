@@ -13,7 +13,7 @@
 #     -e QMK_USERSPACE=/qmk_userspace \
 #     -w /qmk_firmware \
 #     qmkfm/qmk_cli \
-#     qmk compile -kb keychron/q6_max -km ecoutu
+#     qmk compile -kb keychron/q6_max/ansi_encoder -km ecoutu
 
 FROM qmkfm/qmk_cli
 
@@ -21,4 +21,4 @@ FROM qmkfm/qmk_cli
 WORKDIR /qmk_firmware
 
 # Default command: compile the ecoutu keymap
-CMD ["qmk", "compile", "-kb", "keychron/q6_max", "-km", "ecoutu"]
+CMD ["qmk", "compile", "-kb", "keychron/q6_max/ansi_encoder", "-km", "ecoutu"]

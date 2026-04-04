@@ -57,6 +57,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 // clang-format on
+#if defined(TAP_DANCE_ENABLE)
+tap_dance_action_t tap_dance_actions[] = {
+    // Tap dance actions can be added here
+};
+#endif // TAP_DANCE_ENABLE
+
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [MAC_BASE] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
