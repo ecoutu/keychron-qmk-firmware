@@ -84,25 +84,34 @@ static td_state_t cur_dance(tap_dance_state_t *state) {
 static td_state_t w_tap_state = TD_NONE;
 static bool w_held = false;
 
+static void td_w_each(tap_dance_state_t *state, void *user_data) {
+  // Register W immediately on first press to eliminate hold delay
+  if (state->count == 1 && state->pressed && !w_held) {
+    register_code(KC_W);
+  }
+}
+
 static void td_w_finished(tap_dance_state_t *state, void *user_data) {
   w_tap_state = cur_dance(state);
   switch (w_tap_state) {
     case TD_SINGLE_TAP:
-      tap_code(KC_W);
+      // W was registered in td_w_each; unregister to complete the tap
+      if (!w_held) unregister_code(KC_W);
       break;
     case TD_SINGLE_HOLD:
-      if (!w_held) register_code(KC_W); // no-op if already toggled held
+      // W already registered in td_w_each; nothing to do
       break;
     case TD_DOUBLE_TAP:
       if (w_held) {
         unregister_code(KC_W);
         w_held = false;
       } else {
-        register_code(KC_W);
+        // W already registered in td_w_each; just set the held state
         w_held = true;
       }
       break;
     default:
+      if (!w_held) unregister_code(KC_W);
       break;
   }
 }
@@ -115,7 +124,7 @@ static void td_w_reset(tap_dance_state_t *state, void *user_data) {
 }
 
 tap_dance_action_t tap_dance_actions[] = {
-  [TD_W] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, td_w_finished, td_w_reset),
+  [TD_W] = ACTION_TAP_DANCE_FN_ADVANCED(td_w_each, td_w_finished, td_w_reset),
 };
 #endif // TAP_DANCE_ENABLE
 
