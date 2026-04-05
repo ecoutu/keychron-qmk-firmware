@@ -129,8 +129,15 @@ tap_dance_action_t tap_dance_actions[] = {
 
 bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   if (w_held) {
-    for (uint8_t i = led_min; i < led_max; i++) {
-      rgb_matrix_set_color(i, 0, 0, 255);
+    for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
+      for (uint8_t col = 0; col < MATRIX_COLS; col++) {
+        uint8_t led_i = g_led_config.matrix_co[row][col];
+        if (led_i == NO_LED || led_i < led_min || led_i >= led_max) continue;
+        keypos_t pos = {.row = row, .col = col};
+        if (keymap_key_to_keycode(WIN_BASE, pos) == TD(TD_W)) {
+          rgb_matrix_set_color(led_i, 0, 255, 0);
+        }
+      }
     }
   }
   return true;
