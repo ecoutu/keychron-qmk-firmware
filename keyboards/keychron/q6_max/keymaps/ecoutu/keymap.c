@@ -126,6 +126,15 @@ static void td_w_reset(tap_dance_state_t *state, void *user_data) {
 tap_dance_action_t tap_dance_actions[] = {
   [TD_W] = ACTION_TAP_DANCE_FN_ADVANCED(td_w_each, td_w_finished, td_w_reset),
 };
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+  if (w_held) {
+    for (uint8_t i = led_min; i < led_max; i++) {
+      rgb_matrix_set_color(i, 0, 0, 255);
+    }
+  }
+  return true;
+}
 #endif // TAP_DANCE_ENABLE
 
 #if defined(ENCODER_MAP_ENABLE)
