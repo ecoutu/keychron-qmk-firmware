@@ -16,19 +16,8 @@
 
 #include QMK_KEYBOARD_H
 #include "keychron_common.h"
-
-enum layers {
-  MAC_BASE,
-  MAC_FN,
-  WIN_BASE,
-  WIN_FN,
-};
-
-#if defined(TAP_DANCE_ENABLE)
-enum tap_dance_keycodes {
-  TD_W,
-};
-#endif
+#include "layers.h"
+#include "tap_dance.h"
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -49,134 +38,32 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [WIN_BASE] = LAYOUT_109_ansi(
         KC_ESC,   KC_F1,    KC_F2,    KC_F3,    KC_F4,    KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,     KC_MUTE,    KC_PSCR,  KC_SCRL,  KC_NO,    _______,  _______,  _______,  _______,
         KC_GRV,   KC_1,     KC_2,     KC_3,     KC_4,     KC_5,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,     KC_MINS,  KC_EQL,     KC_BSPC,    KC_INS,   KC_HOME,  KC_PGUP,  KC_NUM,   KC_PSLS,  KC_PAST,  KC_PMNS,
-        KC_TAB,   KC_Q,     TD(TD_W), KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,    KC_BSLS,    KC_DEL,   KC_END,   KC_PGDN,  KC_P7,    KC_P8,    KC_P9,
-        KC_CAPS,  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,              KC_ENT,                                   KC_P4,    KC_P5,    KC_P6,    KC_PPLS,
+        KC_TAB,   TD(TD_Q), TD(TD_W), KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,    KC_BSLS,    KC_DEL,   KC_END,   KC_PGDN,  KC_P7,    KC_P8,    KC_P9,
+        TG(3),  KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,              KC_ENT,                                   KC_P4,    KC_P5,    KC_P6,    KC_PPLS,
         KC_LSFT,            KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,              KC_RSFT,              KC_UP,              KC_P1,    KC_P2,    KC_P3,
-        KC_LCTL,  KC_LWIN,  KC_LALT,                                KC_SPC,                                 KC_RALT,  KC_RWIN,  MO(WIN_FN), KC_RCTL,    KC_LEFT,  KC_DOWN,  KC_RGHT,  KC_P0,              KC_PDOT,  KC_PENT),
+        KC_LCTL,  KC_LWIN,  KC_LALT,                                LT(3, KC_SPC),                                 KC_RALT,  KC_RWIN,  MO(WIN_FN), KC_RCTL,    KC_LEFT,  KC_DOWN,  KC_RGHT,  KC_P0,              KC_PDOT,  KC_PENT),
     [WIN_FN] = LAYOUT_109_ansi(
         _______,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  KC_F5,    KC_F6,    KC_F7,    KC_F8,    KC_F9,    KC_F10,   KC_F11,   KC_F12,     KC_NO,      _______,  _______,  KC_NO,    _______,  _______,  _______,  _______,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,    _______,  _______,  _______,  _______,  _______,  _______,  _______,
-        KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,    _______,  _______,  _______,  _______,  _______,  _______,
-        _______,  KC_NO,    KC_NO,    KC_NO,    KC_NO,    KC_NO,    _______,  _______,  _______,  _______,  _______,  _______,              _______,                                  _______,  _______,  _______,  _______,
-        _______,            _______,  _______,  _______,  _______,  _______,  NK_TOGG,  _______,  _______,  _______,  _______,              _______,              _______,            _______,  _______,  _______,
+        _______,    _______,    _______,    _______,    _______,    _______,    _______,  _______,  _______,  _______,  _______,  _______,  _______,    _______,    _______,  _______,  _______,  _______,  _______,  _______,
+        _______,  _______,    _______,    _______,    _______,    _______,    _______,  _______,  _______,  _______,  _______,  _______,              _______,                                  _______,  _______,  _______,  _______,
+        _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,              _______,              _______,            _______,  _______,  _______,
         _______,  _______,  _______,                                _______,                                _______,  _______,  _______,    _______,    _______,  _______,  _______,  _______,            _______,  _______)
 };
 
 // clang-format on
-#if defined(TAP_DANCE_ENABLE)
-typedef enum {
-  TD_NONE,
-  TD_UNKNOWN,
-  TD_SINGLE_TAP,
-  TD_SINGLE_HOLD,
-  TD_DOUBLE_TAP,
-} td_state_t;
-
-static td_state_t cur_dance(tap_dance_state_t *state) {
-  if (state->count == 1) {
-    if (state->interrupted || !state->pressed) return TD_SINGLE_TAP;
-    return TD_SINGLE_HOLD;
-  }
-  if (state->count == 2) return TD_DOUBLE_TAP;
-  return TD_UNKNOWN;
-}
-
-static td_state_t w_tap_state = TD_NONE;
-static bool w_held = false;
-
-static void td_w_each(tap_dance_state_t *state, void *user_data) {
-  // Register W immediately on first press to eliminate hold delay
-  if (state->count == 1 && state->pressed && !w_held) {
-    register_code(KC_W);
-  }
-}
-
-static void td_w_finished(tap_dance_state_t *state, void *user_data) {
-  w_tap_state = cur_dance(state);
-  switch (w_tap_state) {
-    case TD_SINGLE_TAP:
-      // W was registered in td_w_each; unregister to complete the tap
-      if (!w_held) unregister_code(KC_W);
-      break;
-    case TD_SINGLE_HOLD:
-      // W already registered in td_w_each; nothing to do
-      break;
-    case TD_DOUBLE_TAP:
-      if (w_held) {
-        unregister_code(KC_W);
-        w_held = false;
-      } else {
-        // W already registered in td_w_each; just set the held state
-        w_held = true;
-      }
-      break;
-    default:
-      if (!w_held) unregister_code(KC_W);
-      break;
-  }
-}
-
-static void td_w_reset(tap_dance_state_t *state, void *user_data) {
-  if (w_tap_state == TD_SINGLE_HOLD && !w_held) {
-    unregister_code(KC_W);
-  }
-  w_tap_state = TD_NONE;
-}
-
-tap_dance_action_t tap_dance_actions[] = {
-  [TD_W] = ACTION_TAP_DANCE_FN_ADVANCED(td_w_each, td_w_finished, td_w_reset),
-};
-
-bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-  if (w_held) {
-    for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
-      for (uint8_t col = 0; col < MATRIX_COLS; col++) {
-        uint8_t led_i = g_led_config.matrix_co[row][col];
-        if (led_i == NO_LED || led_i < led_min || led_i >= led_max) continue;
-        keypos_t pos = {.row = row, .col = col};
-        if (keymap_key_to_keycode(WIN_BASE, pos) == TD(TD_W)) {
-          rgb_matrix_set_color(led_i, 0, 255, 0);
-        }
-      }
-    }
-  }
-  return true;
-}
-#endif // TAP_DANCE_ENABLE
-
 #if defined(ENCODER_MAP_ENABLE)
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][2] = {
     [MAC_BASE] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
-    [MAC_FN] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
+    [MAC_FN]   = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
     [WIN_BASE] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
-    [WIN_FN] = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
+    [WIN_FN]   = {ENCODER_CCW_CW(KC_VOLD, KC_VOLU)},
 };
 #endif // ENCODER_MAP_ENABLE
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (!process_record_keychron_common(keycode, record)) {
-    return false;
-  }
-  return true;
-}
-
-void keyboard_post_init_user(void) {
-  rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
-  rgb_matrix_sethsv_noeeprom(0, 255, RGB_MATRIX_MAXIMUM_BRIGHTNESS);
-}
-
-layer_state_t layer_state_set_user(layer_state_t state) {
-  uint8_t hue;
-  switch (get_highest_layer(state)) {
-    case MAC_FN:
-    case WIN_FN:
-      hue = 170;
-      break;
-    default:
-      hue = 0;
-      break;
-  }
-  rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
-  rgb_matrix_sethsv_noeeprom(hue, 255, rgb_matrix_get_val());
-  return state;
+    if (!process_record_keychron_common(keycode, record)) {
+        return false;
+    }
+    return true;
 }

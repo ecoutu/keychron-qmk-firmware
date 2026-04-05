@@ -9,3 +9,5 @@ ENCODER_MAP_ENABLE = yes
 
 # RGB Matrix enabled - Keychron wireless_playground fork has the required SPI drivers
 RGB_MATRIX_ENABLE = yes
+
+SRC += tap_dance.c rgb.c
