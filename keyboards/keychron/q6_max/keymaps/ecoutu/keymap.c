@@ -152,3 +152,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   }
   return true;
 }
+
+void keyboard_post_init_user(void) {
+  rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+  rgb_matrix_sethsv_noeeprom(0, 255, RGB_MATRIX_MAXIMUM_BRIGHTNESS);
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+  uint8_t hue;
+  switch (get_highest_layer(state)) {
+    case MAC_FN:
+    case WIN_FN:
+      hue = 170;
+      break;
+    default:
+      hue = 0;
+      break;
+  }
+  rgb_matrix_mode_noeeprom(RGB_MATRIX_SOLID_COLOR);
+  rgb_matrix_sethsv_noeeprom(hue, 255, rgb_matrix_get_val());
+  return state;
+}
