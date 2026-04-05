@@ -2,9 +2,9 @@
 #pragma once
 
 // Debounce: time in ms to wait after a key state change before registering it.
-// The keyboard default is 20ms. Override here to tune responsiveness.
+// The keyboard default is 20ms. 5ms was too aggressive and caused key chatter.
 #undef DEBOUNCE
-#define DEBOUNCE 5
+#define DEBOUNCE 10
 
 // Tapping term: max ms between press and release to count as a tap (not a hold).
 // Used by tap-dance and mod-tap keys. Default is 200.
